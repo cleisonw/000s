@@ -1,7 +1,13 @@
 <?php
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
+error_reporting(0);
 
-$user = $_GET["user"];
+if(!isset($_GET["user"])){
+    echo json_encode(["erro"=>"Usuário não informado"]);
+    exit;
+}
+
+$user = preg_replace("/[^a-zA-Z0-9._]/","",$_GET["user"]);
 
 $url = "https://www.instagram.com/$user/?__a=1&__d=dis";
 
@@ -17,19 +23,19 @@ curl_close($ch);
 
 $data = json_decode($response, true);
 
-if(!$data){
-    echo json_encode(["erro" => "Usuário não encontrado"]);
+if(!$data || !isset($data["graphql"]["user"])){
+    echo json_encode(["erro"=>"Perfil não encontrado"]);
     exit;
 }
 
-$userData = $data["graphql"]["user"];
+$u = $data["graphql"]["user"];
 
 echo json_encode([
-    "nome" => $userData["full_name"],
-    "username" => $userData["username"],
-    "bio" => $userData["biography"],
-    "seguidores" => $userData["edge_followed_by"]["count"],
-    "seguindo" => $userData["edge_follow"]["count"],
-    "posts" => $userData["edge_owner_to_timeline_media"]["count"],
-    "foto" => $userData["profile_pic_url_hd"]
-]);
+    "nome"=>$u["full_name"],
+    "username"=>$u["username"],
+    "bio"=>$u["biography"],
+    "seguidores"=>$u["edge_followed_by"]["count"],
+    "seguindo"=>$u["edge_follow"]["count"],
+    "posts"=>$u["edge_owner_to_timeline_media"]["count"],
+    "foto"=>$u["profile_pic_url_hd"]
+], JSON_UNESCAPED_UNICODE);
