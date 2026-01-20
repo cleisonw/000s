@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
-error_reporting(0);
+
+$API_KEY = "e9358468d937bc8ab569576c7103adc568e2dccd";
 
 if(!isset($_GET["user"])){
     echo json_encode(["erro"=>"Usuário não informado"]);
@@ -8,34 +9,35 @@ if(!isset($_GET["user"])){
 }
 
 $user = preg_replace("/[^a-zA-Z0-9._]/","",$_GET["user"]);
+$url = "https://www.instagram.com/$user/";
 
-$url = "https://www.instagram.com/$user/?__a=1&__d=dis";
+$zen = "https://api.zenrows.com/v1/?apikey=$API_KEY&url=".urlencode($url)."&js_render=true&premium_proxy=true";
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "User-Agent: Mozilla/5.0"
-]);
+$html = file_get_contents($zen);
 
-$response = curl_exec($ch);
-curl_close($ch);
-
-$data = json_decode($response, true);
-
-if(!$data || !isset($data["graphql"]["user"])){
-    echo json_encode(["erro"=>"Perfil não encontrado"]);
+if(!$html){
+    echo json_encode(["erro"=>"Falha ao acessar Instagram"]);
     exit;
 }
 
-$u = $data["graphql"]["user"];
+// Captura JSON interno do Instagram
+if(!preg_match('/"edge_followed_by":{"count":([0-9]+)/',$html,$seg)){
+    echo json_encode(["erro"=>"Perfil não encontrado ou bloqueado"]);
+    exit;
+}
+
+preg_match('/"edge_follow":{"count":([0-9]+)/',$html,$seg2);
+preg_match('/"edge_owner_to_timeline_media":{"count":([0-9]+)/',$html,$posts);
+preg_match('/"full_name":"(.*?)"/',$html,$nome);
+preg_match('/"biography":"(.*?)"/',$html,$bio);
+preg_match('/"profile_pic_url_hd":"(.*?)"/',$html,$foto);
 
 echo json_encode([
-    "nome"=>$u["full_name"],
-    "username"=>$u["username"],
-    "bio"=>$u["biography"],
-    "seguidores"=>$u["edge_followed_by"]["count"],
-    "seguindo"=>$u["edge_follow"]["count"],
-    "posts"=>$u["edge_owner_to_timeline_media"]["count"],
-    "foto"=>$u["profile_pic_url_hd"]
+  "nome"=>html_entity_decode(stripslashes($nome[1] ?? "")),
+  "username"=>$user,
+  "bio"=>html_entity_decode(stripslashes($bio[1] ?? "")),
+  "seguidores"=>$seg[1] ?? 0,
+  "seguindo"=>$seg2[1] ?? 0,
+  "posts"=>$posts[1] ?? 0,
+  "foto"=>stripslashes($foto[1] ?? "")
 ], JSON_UNESCAPED_UNICODE);
