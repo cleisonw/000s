@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Instagram Lookup</title>
+<style>
+body{
+  background:#0b0b0b;
+  font-family:Arial;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:#111;
+  padding:25px;
+  border-radius:15px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 20px #000;
+}
+input{
+  width:90%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin-bottom:10px;
+}
+button{
+  background:#5b2cff;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+}
+img{
+  width:80px;
+  border-radius:50%;
+  margin:10px 0;
+}
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <input id="user" placeholder="@usuario">
+  <br>
+  <button onclick="buscar()">Confirmar</button>
+
+  <div id="resultado" style="display:none;">
+    <img id="foto">
+    <h3 id="nome"></h3>
+    <p id="bio"></p>
+    <div class="stats">
+      <div><b id="posts"></b><br>Posts</div>
+      <div><b id="seguidores"></b><br>Seguidores</div>
+      <div><b id="seguindo"></b><br>Seguindo</div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function buscar(){
+  let user = document.getElementById("user").value.replace("@","");
+  const res = await fetch("instagram.php?user="+user);
+  const data = await res.json();
+
+  if(data.erro){
+    alert("Usuário não encontrado");
+    return;
+  }
+
+  document.getElementById("resultado").style.display="block";
+  document.getElementById("foto").src=data.foto;
+  document.getElementById("nome").innerText=data.nome+" (@"+data.username+")";
+  document.getElementById("bio").innerText=data.bio;
+  document.getElementById("posts").innerText=data.posts;
+  document.getElementById("seguidores").innerText=data.seguidores;
+  document.getElementById("seguindo").innerText=data.seguindo;
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Instagram Lookup</title>
+<style>
+body{
+  background:#0b0b0b;
+  font-family:Arial;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:#111;
+  padding:25px;
+  border-radius:15px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 20px #000;
+}
+input{
+  width:90%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin-bottom:10px;
+}
+button{
+  background:#5b2cff;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+}
+img{
+  width:80px;
+  border-radius:50%;
+  margin:10px 0;
+}
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <input id="user" placeholder="@usuario">
+  <br>
+  <button onclick="buscar()">Confirmar</button>
+
+  <div id="resultado" style="display:none;">
+    <img id="foto">
+    <h3 id="nome"></h3>
+    <p id="bio"></p>
+    <div class="stats">
+      <div><b id="posts"></b><br>Posts</div>
+      <div><b id="seguidores"></b><br>Seguidores</div>
+      <div><b id="seguindo"></b><br>Seguindo</div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function buscar(){
+  let user = document.getElementById("user").value.replace("@","");
+  const res = await fetch("instagram.php?user="+user);
+  const data = await res.json();
+
+  if(data.erro){
+    alert("Usuário não encontrado");
+    return;
+  }
+
+  document.getElementById("resultado").style.display="block";
+  document.getElementById("foto").src=data.foto;
+  document.getElementById("nome").innerText=data.nome+" (@"+data.username+")";
+  document.getElementById("bio").innerText=data.bio;
+  document.getElementById("posts").innerText=data.posts;
+  document.getElementById("seguidores").innerText=data.seguidores;
+  document.getElementById("seguindo").innerText=data.seguindo;
+}
+</script>
+
+</body>
+</html>
